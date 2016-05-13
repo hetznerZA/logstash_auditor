@@ -57,18 +57,6 @@ describe SoarLogstashAuditor do
     end
   end
 
-  context "when asked to error" do
-    it "should ask the auditor to error, giving it data received" do
-      @iut.error("test-error")
-      expect(@iut.log.include?("error: test-error")).to eq(true)
-    end
-
-    it "should ask the auditor to error without data, if no data was provided" do
-      @iut.error("")
-      expect(@iut.log.include?("error: ")).to eq(true)
-    end
-  end
-
   context "when asked to warn" do
     it "should ask the auditor to warn, giving it data received" do
       @iut.warn("test-warn")
@@ -78,6 +66,18 @@ describe SoarLogstashAuditor do
     it "should ask the auditor to warn without data, if no data was provided" do
       @iut.warn("")
       expect(@iut.log.include?("warn: ")).to eq(true)
+    end
+  end
+
+  context "when asked to error" do
+    it "should ask the auditor to error, giving it data received" do
+      @iut.error("test-error")
+      expect(@iut.log.include?("error: test-error")).to eq(true)
+    end
+
+    it "should ask the auditor to error without data, if no data was provided" do
+      @iut.error("")
+      expect(@iut.log.include?("error: ")).to eq(true)
     end
   end
 
