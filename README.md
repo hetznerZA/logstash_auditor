@@ -24,6 +24,12 @@ Or install it yourself as:
 
     $ gem install soar_logstash_auditor
 
+## Testing
+
+Behavioural driven testing can be performed:
+
+    $ bundle exec rspec -cfd spec/*
+
 ## Usage
 
 

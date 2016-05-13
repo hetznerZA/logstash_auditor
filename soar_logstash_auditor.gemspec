@@ -11,6 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Logstash implementation of SOAR architecture auditing}
   spec.description   = %q{Logstash implementation of SOAR architecture auditing allowing easy publishing of events to a centralized logstash collection engine}
+  spec.homepage      = "https://github.hetzner.co.za/hetznerZA/soar_logstash_auditor"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
@@ -22,4 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "byebug"
+
+  spec.add_dependency 'soar_auditor', "~> 0"
+  spec.add_dependency 'rubysl-securerandom', "~> 2"
 end

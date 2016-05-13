@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe SoarLogstashAuditor do
   before :all do
-    @test_auditor = SoarLogstashAuditor::TestAuditor.new
-    @test_auditor_configuration = {}
-    @iut = SoarLogstashAuditor::TestAPI.new(@test_auditor, @test_auditor_configuration)
+    @auditor = SoarLogstashAuditor::LogstashAuditor.new
+    @auditor_configuration = {}
+    @iut = SoarLogstashAuditor::TestAPI.new(@auditor, @auditor_configuration)
   end
 
   it 'has a version number' do
@@ -14,11 +14,11 @@ describe SoarLogstashAuditor do
   context "when initializing" do
     it 'should remember the auditing provider specified' do
       expect(@iut.auditor).to_not be_nil
-      expect(@iut.auditor).to eq(@test_auditor)
+      expect(@iut.auditor).to eq(@auditor)
     end
 
     it 'should not require an auditor configuration' do
-      @iut = SoarLogstashAuditor::TestAPI.new(@test_auditor)
+      @iut = SoarLogstashAuditor::TestAPI.new(@auditor)
     end
 
     it 'should raise ArgumentError if no auditor is specified' do
@@ -33,7 +33,7 @@ describe SoarLogstashAuditor do
     end
 
     it 'should use inversion of control to itself in order to initialize the provider, using no configuration if none is provided' do
-      @iut = SoarLogstashAuditor::TestAPI.new(@test_auditor)
+      @iut = SoarLogstashAuditor::TestAPI.new(@auditor)
       expect(@iut.auditor.has_been_configured).to eq(true)
     end
 
