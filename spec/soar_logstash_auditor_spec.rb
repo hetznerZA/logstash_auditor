@@ -33,61 +33,61 @@ describe SoarLogstashAuditor do
     end
   end
 
-  context "when asked to debug" do
-    it "should ask the auditor to debug, giving it data received" do
+  context "when given debug" do
+    it "should debug with data received" do
       @iut.debug("test-debug")
       expect(@iut.log.include?("debug: test-debug")).to eq(true)
     end
 
-    it "should ask the auditor to debug without data, if no data was provided" do
+    it "should debug without data, if no data was provided" do
       @iut.debug("")
       expect(@iut.log.include?("debug: ")).to eq(true)
     end
   end
 
-  context "when asked to info" do
-    it "should ask the auditor to info, giving it data received" do
+  context "when given info" do
+    it "should info with data received" do
       @iut.info("test-info")
       expect(@iut.log.include?("info: test-info")).to eq(true)
     end
 
-    it "should ask the auditor to info without data, if no data was provided" do
+    it "should info without data, if no data was provided" do
       @iut.info("")
       expect(@iut.log.include?("info: ")).to eq(true)
     end
   end
 
-  context "when asked to warn" do
-    it "should ask the auditor to warn, giving it data received" do
+  context "when given warn" do
+    it "should warn with data received" do
       @iut.warn("test-warn")
       expect(@iut.log.include?("warn: test-warn")).to eq(true)
     end
 
-    it "should ask the auditor to warn without data, if no data was provided" do
+    it "should warn without data, if no data was provided" do
       @iut.warn("")
       expect(@iut.log.include?("warn: ")).to eq(true)
     end
   end
 
-  context "when asked to error" do
-    it "should ask the auditor to error, giving it data received" do
+  context "when given error" do
+    it "should error with data received" do
       @iut.error("test-error")
       expect(@iut.log.include?("error: test-error")).to eq(true)
     end
 
-    it "should ask the auditor to error without data, if no data was provided" do
+    it "should error without data, if no data was provided" do
       @iut.error("")
       expect(@iut.log.include?("error: ")).to eq(true)
     end
   end
 
-  context "when asked to fatal" do
-    it "should ask the auditor to fatal, giving it data received" do
+  context "when given fatal" do
+    it "should fatal with data received" do
       @iut.fatal("test-fatal")
       expect(@iut.log.include?("fatal: test-fatal")).to eq(true)
     end
 
-    it "should ask the auditor to fatal without data, if no data was provided" do
+    it "should fatal without data, if no data was provided" do
       @iut.fatal("")
       expect(@iut.log.include?("fatal: ")).to eq(true)
     end
