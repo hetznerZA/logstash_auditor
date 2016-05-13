@@ -1,18 +1,25 @@
+require 'soar_auditor'
+
 module SoarLogstashAuditor
-  class LogstashAuditor
+  class LogstashAuditor < SoarAuditor::AuditingProviderAPI
     attr_reader :has_been_configured
     attr_reader :configuration
     attr_accessor :log
-
-    def configure(configuration)
-      @configuration = configuration
-      @has_been_configured = true
-    end
 
     def initialize
       @log = []
       @has_been_configured = false
     end
+
+    def configure(configuration = nil)
+      raise ArgumentError, "No configuration provided" if configuration == nil
+      raise ArgumentError, "Invalid configuration provided" unless configuration_is_good(configuration)
+      
+      @configuration = configuration
+      @has_been_configured = true
+    end
+
+
 
     def debug(data)
       @log << "debug: #{data}"
@@ -68,6 +75,26 @@ module SoarLogstashAuditor
         puts "Failure " + response.code + " communicating with logstash"
       end
       return :failure
+    end
+
+    def configuration_is_good(configuration)
+      unless configuration.include?("host_url")
+        puts "Parameter host_url not provided in configuration"
+        return false
+      end
+      unless configuration.include?("username")
+        puts "Parameter username not provided in configuration"
+        return false
+      end
+      unless configuration.include?("password")
+        puts "Parameter password not provided in configuration"
+        return false
+      end
+      unless configuration.include?("timeout")
+        puts "Parameter timeout not provided in configuration"
+        return false
+      end
+      return true
     end
 
 
