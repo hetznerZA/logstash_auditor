@@ -28,7 +28,10 @@ Or install it yourself as:
 
 Behavioural driven testing can be performed by testing against an ELK docker image:
 
-    $ sudo docker run -d -v spec/support/logstash_conf.d:/etc/logstash/conf.d -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8080:8080 sebp/elk
+    $ sudo docker run -d -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8080:8080 sebp/elk
+
+Wait about 30 seconds for image to fire up. Then perform the tests:
+
     $ bundle exec rspec -cfd spec/*
 
 Note that in order to ensure that the processing has occurred on Elastic Search
@@ -36,7 +39,10 @@ there is a 2 second delay between each event submission request and the search r
 
 Afterwards destroy the running docker image as follows:
     $ sudo docker ps
-    $ sudo docker <CONTAINER_ID>
+    $ sudo docker stop <CONTAINER_ID>
+
+Debugging the docker image:
+    $ sudo docker exec -it <CONTAINER_ID> bash
 
 ## Usage
 
