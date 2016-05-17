@@ -1,22 +1,29 @@
 require 'spec_helper'
 
-describe SoarLogstashAuditor do
+describe LogstashAuditor do
   before :all do
-    @iut = SoarLogstashAuditor::LogstashAuditor.new
-    @invalid_configuration = { "bla" => "bla"}
-    @valid_configuration = { "host_url" => "something",
+    @iut = LogstashAuditor::LogstashAuditor.new
+    @invalid_logstash_configuration = { "bla" => "bla"}
+    @valid_logstash_configuration = { "host_url" => "http://127.0.0.1:8080",
                              "username" => "something",
                              "password" => "something",
-                             "timeout"  => "something"}
+                             "timeout"  => 3}
+    @iut.configure(@valid_logstash_configuration)
+
+    elastic_search_configuration = { "host_url" => "http://localhost:9200/_search",
+                                     "username" => "something",
+                                     "password" => "something",
+                                     "timeout"  => 3}
+    @elasticsearch = LogstashAuditor::ElasticSearchTestAPI.new
   end
 
   it 'has a version number' do
-    expect(SoarLogstashAuditor::VERSION).not_to be nil
+    expect(LogstashAuditor::VERSION).not_to be nil
   end
 
   context "when initializing" do
     it 'should accept a valid auditor configuration' do
-      @iut.configure(@valid_configuration)
+      @iut.configure(@valid_logstash_configuration)
       expect(@iut.has_been_configured).to eq(true)
     end
 
@@ -28,68 +35,34 @@ describe SoarLogstashAuditor do
 
     it 'should raise ArgumentError if invalid configuration is specified' do
       expect {
-        @iut.configure(@invalid_configuration)
+        @iut.configure(@invalid_logstash_configuration)
       }.to raise_error(ArgumentError, "Invalid configuration provided")
     end
   end
 
-  context "when given debug" do
-    it "should debug with data received" do
-      @iut.debug("test-debug")
-      expect(@iut.log.include?("debug: test-debug")).to eq(true)
+  context "when given event" do
+    it "should submit event to logstash with data received" do
+      test_id = @elasticsearch.create_flow_id
+      debug_message = "some debug message"
+
+      @iut.event(test_id, debug_message)
+      sleep(2) #Allow the event to be saved in Elastic Search before trying to search for it.
+      found_event_message = @elasticsearch.search_for_flow_id(test_id)
+
+      expect(found_event_message).to be_truthy #Not nil
+      expect(found_event_message.include?(debug_message)).to eq(true)
     end
 
-    it "should debug without data, if no data was provided" do
-      @iut.debug("")
-      expect(@iut.log.include?("debug: ")).to eq(true)
-    end
-  end
+    it "should submit event without data, if no data was provided" do
+      test_id = @elasticsearch.create_flow_id
+      debug_message = ""
 
-  context "when given info" do
-    it "should info with data received" do
-      @iut.info("test-info")
-      expect(@iut.log.include?("info: test-info")).to eq(true)
-    end
+      @iut.event(test_id, debug_message)
+      sleep(2) #Allow the event to be saved in Elastic Search before trying to search for it.
+      found_event_message = @elasticsearch.search_for_flow_id(test_id)
 
-    it "should info without data, if no data was provided" do
-      @iut.info("")
-      expect(@iut.log.include?("info: ")).to eq(true)
-    end
-  end
-
-  context "when given warn" do
-    it "should warn with data received" do
-      @iut.warn("test-warn")
-      expect(@iut.log.include?("warn: test-warn")).to eq(true)
-    end
-
-    it "should warn without data, if no data was provided" do
-      @iut.warn("")
-      expect(@iut.log.include?("warn: ")).to eq(true)
-    end
-  end
-
-  context "when given error" do
-    it "should error with data received" do
-      @iut.error("test-error")
-      expect(@iut.log.include?("error: test-error")).to eq(true)
-    end
-
-    it "should error without data, if no data was provided" do
-      @iut.error("")
-      expect(@iut.log.include?("error: ")).to eq(true)
-    end
-  end
-
-  context "when given fatal" do
-    it "should fatal with data received" do
-      @iut.fatal("test-fatal")
-      expect(@iut.log.include?("fatal: test-fatal")).to eq(true)
-    end
-
-    it "should fatal without data, if no data was provided" do
-      @iut.fatal("")
-      expect(@iut.log.include?("fatal: ")).to eq(true)
+      expect(found_event_message).to be_truthy #Not nil
+      expect(found_event_message.include?(debug_message)).to eq(true)
     end
   end
 end

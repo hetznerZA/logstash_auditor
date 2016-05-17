@@ -1,5 +1,5 @@
 require 'soar_logstash_auditor/version'
-require 'soar_logstash_auditor/auditing_provider'
+require 'soar_logstash_auditor/auditor'
 
-module SoarLogstashAuditor
+module LogstashAuditor
 end

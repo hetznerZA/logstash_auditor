@@ -1,29 +1,21 @@
-require 'log4r'
+$LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
+
 require 'soar_logstash_auditor'
 require 'byebug'
 
-class Log4rAuditingProvider < SoarLogstashAuditor::AuditingProviderAPI
-  def configure_auditor(configuration = nil)
-    @auditor.outputters = configuration['outputter']
-  end
-end
-
 class Main
-  include Log4r
-  
-  def test_sanity
-    auditor = Logger.new 'sanity'
-    auditor_configuration = { 'outputter' => Outputter.stdout }
-    @iut = Log4rAuditingProvider.new(auditor, auditor_configuration)
+  def create_flow_id
+    return Digest::SHA256.hexdigest("#{Time.now.to_i}#{rand(4000000)}")
+  end
 
-    some_debug_object = 123
-    @iut.info("This is info")
-    @iut.debug(some_debug_object)
-    dropped = 95
-    @iut.warn("Statistics show that dropped packets have increased to #{dropped}%")
-    @iut.error("Could not resend some dropped packets. They have been lost. All is still OK, I could compensate")
-    @iut.fatal("Unable to perform action, too many dropped packets. Functional degradation.")
-    @iut << 'Rack::CommonLogger requires this'
+  def test_sanity
+    @iut = LogstashAuditor::LogstashAuditor.new
+    @valid_logstash_configuration = { "host_url" => "http://127.0.0.1:8080",
+                             "username" => "something",
+                             "password" => "something",
+                             "timeout"  => 3}
+    @iut.configure(@valid_logstash_configuration)
+    @iut.event(create_flow_id, "This is info")
   end
 end
 

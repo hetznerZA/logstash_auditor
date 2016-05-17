@@ -1,4 +1,4 @@
-# SoarLogstashAuditor
+# LogstashAuditor
 
 This gem provides the logstash auditing provider for the SOAR architecture.
 
@@ -26,18 +26,26 @@ Or install it yourself as:
 
 ## Testing
 
-Behavioural driven testing can be performed:
+Behavioural driven testing can be performed by testing against an ELK docker image:
 
+    $ sudo docker run -d -v spec/support/logstash_conf.d:/etc/logstash/conf.d -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8080:8080 sebp/elk
     $ bundle exec rspec -cfd spec/*
+
+Note that in order to ensure that the processing has occurred on Elastic Search
+there is a 2 second delay between each event submission request and the search request
+
+Afterwards destroy the running docker image as follows:
+    $ sudo docker ps
+    $ sudo docker <CONTAINER_ID>
 
 ## Usage
 
 
 #TODO complete this section
-#TODO Extend the SoarLogstashAuditor::AuditingProviderAPI to create an auditing provider:
+#TODO Extend the LogstashAuditor::AuditingProviderAPI to create an auditing provider:
 
 ```
-class MyAuditingProvider < SoarLogstashAuditor::AuditingProviderAPI
+class MyAuditingProvider < LogstashAuditor::AuditingProviderAPI
 end
 ```
 
@@ -80,7 +88,7 @@ The API also supports appending as below, enabling support, e.g. for Rack::Commo
 require 'log4r'
 require 'soar_logstash_auditor'
 
-class Log4rAuditingProvider < SoarLogstashAuditor::AuditingProviderAPI
+class Log4rAuditingProvider < LogstashAuditor::AuditingProviderAPI
   def configure_auditor(configuration = nil)
     @auditor.outputters = configuration['outputter']
   end

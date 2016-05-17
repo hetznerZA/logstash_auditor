@@ -5,7 +5,7 @@ require 'soar_logstash_auditor/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "soar_logstash_auditor"
-  spec.version       = SoarLogstashAuditor::VERSION
+  spec.version       = LogstashAuditor::VERSION
   spec.authors       = ["Barney de Villiers"]
   spec.email         = ["barney.de.villiers@hetzner.co.za"]
 
@@ -23,7 +23,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "byebug"
+  spec.add_development_dependency "elasticsearch"
+  spec.add_development_dependency "faraday"
+  spec.add_development_dependency "hashie"
 
-  spec.add_dependency 'soar_auditor', "~> 0"
   spec.add_dependency 'rubysl-securerandom', "~> 2"
+
 end

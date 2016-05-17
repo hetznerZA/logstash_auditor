@@ -1,69 +1,48 @@
-require 'soar_auditor'
+require 'json'
 
-module SoarLogstashAuditor
-  class LogstashAuditor < SoarAuditor::AuditingProviderAPI
+module LogstashAuditor
+  class LogstashAuditor
     attr_reader :has_been_configured
     attr_reader :configuration
-    attr_accessor :log
 
     def initialize
-      @log = []
       @has_been_configured = false
     end
 
     def configure(configuration = nil)
       raise ArgumentError, "No configuration provided" if configuration == nil
       raise ArgumentError, "Invalid configuration provided" unless configuration_is_good(configuration)
-      
+
       @configuration = configuration
       @has_been_configured = true
     end
 
 
 
-    def debug(data)
-      @log << "debug: #{data}"
+    def event(flow_id, message)
+      raise ArgumentError, "No flow id provided" if flow_id == nil
+      data = { "flow_id" => flow_id, "message" => message }
+      send_event( data )
     end
-
-
-    def error(data)
-      @log << "error: #{data}"
-    end
-
-
-    def info(data)
-      @log << "info: #{data}"
-    end
-
-
-    def fatal(data)
-      @log << "fatal: #{data}"
-    end
-
-
-    def warn(data)
-      @log << "warn: #{data}"
-    end
-
 
     private
 
     def send_event(data)
       uri = URI.parse(@configuration["host_url"])
       http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
+      #http.use_ssl = true #TODO NEED TO PUT THIS BACK
       http.read_timeout = @configuration["timeout"]
       http.open_timeout = @configuration["timeout"]
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE #TODO need implement and test the verification scheme of the logstash server cert
-      request = Net::HTTP::Post.new(uri.request_uri)
-
+      #http.verify_mode = OpenSSL::SSL::VERIFY_NONE #TODO need implement and test the verification scheme of the logstash server cert
+      #request = Net::HTTP::Post.new(uri.request_uri)
+      request = Net::HTTP::Post.new(uri.request_uri, initheader = {'Content-Type' =>'application/json'})
       request.basic_auth(@configuration["username"], @configuration["password"])
 
       #TODO not yet sure what is the best way to send information to logstash.
       #sending as a map will replace spaces with + in logs
       #sending as combined json string will add http %% characters to logstash
       #sending as base64 encoded will require decoding in logstash filters
-      request.set_form_data(data)
+      request.body = data.to_json
       response = http.request(request)
 
       case response.code
