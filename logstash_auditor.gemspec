@@ -1,17 +1,17 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'soar_logstash_auditor/version'
+require 'logstash_auditor/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "soar_logstash_auditor"
+  spec.name          = "logstash_auditor"
   spec.version       = LogstashAuditor::VERSION
   spec.authors       = ["Barney de Villiers"]
   spec.email         = ["barney.de.villiers@hetzner.co.za"]
 
   spec.summary       = %q{Logstash implementation of SOAR architecture auditing}
   spec.description   = %q{Logstash implementation of SOAR architecture auditing allowing easy publishing of events to a centralized logstash collection engine}
-  spec.homepage      = "https://github.hetzner.co.za/hetznerZA/soar_logstash_auditor"
+  spec.homepage      = "https://github.hetzner.co.za/hetznerZA/logstash_auditor"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }

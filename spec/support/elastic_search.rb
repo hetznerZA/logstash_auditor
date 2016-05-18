@@ -1,12 +1,10 @@
 module LogstashAuditor
 
-#TODO make the interface secure with  https://github.com/elastic/elasticsearch-ruby/blob/master/elasticsearch-transport/README.md
-
   class ElasticSearchTestAPI
     require 'elasticsearch'
 
-    def initialize
-      @client = Elasticsearch::Client.new log: false, host: '127.0.0.1:9200'
+    def initialize(url)
+      @client = Elasticsearch::Client.new log: false, host: url
       @client.cluster.health
       @client.transport.reload_connections!
     end
@@ -16,7 +14,10 @@ module LogstashAuditor
       @client.indices.refresh index: 'flow_id'
       result = @client.search index: '',
                               fields: ['message', 'flow_id'],
-                              sort: { 'timestamp': { order: 'desc'}},
+                              sort:
+                              {
+                                'timestamp': { order: 'desc'}
+                              },
                               body:
                               {
                                 query:

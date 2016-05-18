@@ -4,17 +4,13 @@ describe LogstashAuditor do
   before :all do
     @iut = LogstashAuditor::LogstashAuditor.new
     @invalid_logstash_configuration = { "bla" => "bla"}
-    @valid_logstash_configuration = { "host_url" => "http://127.0.0.1:8080",
-                             "username" => "something",
-                             "password" => "something",
-                             "timeout"  => 3}
+    @valid_logstash_configuration = { "host_url" => "http://localhost:8080",
+                              "username" => "something",
+                              "password" => "something",
+                              "timeout"  => 3}
     @iut.configure(@valid_logstash_configuration)
 
-    elastic_search_configuration = { "host_url" => "http://localhost:9200/_search",
-                                     "username" => "something",
-                                     "password" => "something",
-                                     "timeout"  => 3}
-    @elasticsearch = LogstashAuditor::ElasticSearchTestAPI.new
+    @elasticsearch = LogstashAuditor::ElasticSearchTestAPI.new('http://localhost:9200')
   end
 
   it 'has a version number' do

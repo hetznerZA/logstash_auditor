@@ -1,19 +1,17 @@
 # LogstashAuditor
 
-This gem provides the logstash auditing provider for the SOAR architecture.
-
-The provider adheres to the soar auditing API as set out below.
+This gem provides the logstash auditor that can be plugged into the SOAR architecture.
 
 ## State of the API
 
-This provider is to be extended with NFR support pending behavioural specifications.
+This auditor is to be extended with NFR support pending behavioural specifications.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'soar_logstash_auditor'
+gem 'logstash_auditor'
 ```
 
 And then execute:
@@ -22,7 +20,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install soar_logstash_auditor
+    $ gem install logstash_auditor
 
 ## Testing
 
@@ -92,7 +90,7 @@ The API also supports appending as below, enabling support, e.g. for Rack::Commo
 
 ```
 require 'log4r'
-require 'soar_logstash_auditor'
+require 'logstash_auditor'
 
 class Log4rAuditingProvider < LogstashAuditor::AuditingProviderAPI
   def configure_auditor(configuration = nil)

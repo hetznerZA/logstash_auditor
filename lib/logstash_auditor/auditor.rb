@@ -17,8 +17,6 @@ module LogstashAuditor
       @has_been_configured = true
     end
 
-
-
     def event(flow_id, message)
       raise ArgumentError, "No flow id provided" if flow_id == nil
       data = { "flow_id" => flow_id, "message" => message }
@@ -30,10 +28,10 @@ module LogstashAuditor
     def send_event(data)
       uri = URI.parse(@configuration["host_url"])
       http = Net::HTTP.new(uri.host, uri.port)
-      #http.use_ssl = true #TODO NEED TO PUT THIS BACK
+      #http.use_ssl = true #TODO CHECK IF WE NEED TO PUT THIS BACK
       http.read_timeout = @configuration["timeout"]
       http.open_timeout = @configuration["timeout"]
-      #http.verify_mode = OpenSSL::SSL::VERIFY_NONE #TODO need implement and test the verification scheme of the logstash server cert
+      #http.verify_mode = OpenSSL::SSL::VERIFY_NONE #TODO check if we need implement and test the verification scheme of the logstash server cert
       #request = Net::HTTP::Post.new(uri.request_uri)
       request = Net::HTTP::Post.new(uri.request_uri, initheader = {'Content-Type' =>'application/json'})
       request.basic_auth(@configuration["username"], @configuration["password"])
@@ -75,7 +73,5 @@ module LogstashAuditor
       end
       return true
     end
-
-
   end
 end
