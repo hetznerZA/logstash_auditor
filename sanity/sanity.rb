@@ -1,11 +1,6 @@
 require 'logstash_auditor'
 
 class Main
-  def create_flow_id
-    require 'digest'
-    return Digest::SHA256.hexdigest("#{Time.now.to_i}#{rand(4000000)}")
-  end
-
   def test_sanity
     @iut = LogstashAuditor::LogstashAuditor.new
     @valid_logstash_configuration =
@@ -15,7 +10,11 @@ class Main
       "password" => "something",
       "timeout"  => 3}
     @iut.configure(@valid_logstash_configuration)
-    @iut.event(create_flow_id, "This is a test event")
+
+    require 'digest'
+    flow_id = Digest::SHA256.hexdigest("#{Time.now.to_i}#{rand(4000000)}")
+
+    @iut.event(flow_id, "This is a test event")
   end
 end
 

@@ -24,7 +24,7 @@ Or install it yourself as:
 
 ## Testing
 
-Behavioural driven testing can be performed by testing against an ELK docker image:
+Behavioural driven testing can be performed by testing against a local ELK docker image:
 
     $ sudo docker run -d -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8080:8080 sebp/elk
 
@@ -44,75 +44,45 @@ Debugging the docker image:
 
 ## Usage
 
-
-#TODO complete this section
-#TODO Extend the LogstashAuditor::AuditingProviderAPI to create an auditing provider:
+Initialize and configure the auditor so:
 
 ```
-class MyAuditingProvider < LogstashAuditor::AuditingProviderAPI
-end
-```
-
-Provide the required inversion of control method to configure (an) injected auditor(s):
-
-```
-def configure_auditor(configuration = nil)
-  @auditor.configure(configuration)
-end
-```
-
-Initialize the provider so:
-
-```
-auditor = MyAuditor.new
-auditor_configuration = { 'some' => 'configuration' }
-@iut = MyAuditingProvider.new(auditor, auditor_configuration)
+@iut = LogstashAuditor::LogstashAuditor.new
+@logstash_configuration =
+{ "host_url" => "http://localhost:8080",
+  "use_ssl"  => false,
+  "username" => "something",
+  "password" => "something",
+  "timeout"  => 3}
+@iut.configure(@valid_logstash_configuration)
 ```
 
 Audit using the API methods, e.g.:
 
 ```
-@iut.info("This is info")
-@iut.debug(some_debug_object)
-@iut.warn("Statistics show that dropped packets have increased to #{dropped}%")
-@iut.error("Could not resend some dropped packets. They have been lost. All is still OK, I could compensate")
-@iut.fatal("Unable to perform action, too many dropped packets. Functional degradation.")
-@iut << 'Rack::CommonLogger requires this'
-```
-
-The API also supports appending as below, enabling support, e.g. for Rack::CommonLogger, etc.:
-
-```
-<<
+@iut.event(flow_id, "This is a test event")
 ```
 
 ## Detailed example
 
 ```
-require 'log4r'
 require 'logstash_auditor'
 
-class Log4rAuditingProvider < LogstashAuditor::AuditingProviderAPI
-  def configure_auditor(configuration = nil)
-    @auditor.outputters = configuration['outputter']
-  end
-end
-
 class Main
-  include Log4r
-
   def test_sanity
-    auditor = Logger.new 'sanity'
-    auditor_configuration = { 'outputter' => Outputter.stdout }
-    @iut = Log4rAuditingProvider.new(auditor, auditor_configuration)
+    @iut = LogstashAuditor::LogstashAuditor.new
+    @valid_logstash_configuration =
+    { "host_url" => "http://localhost:8080",
+      "use_ssl"  => false,
+      "username" => "something",
+      "password" => "something",
+      "timeout"  => 3}
+    @iut.configure(@valid_logstash_configuration)
 
-    some_debug_object = 123
-    @iut.info("This is info")
-    @iut.debug(some_debug_object)
-    dropped = 95
-    @iut.warn("Statistics show that dropped packets have increased to #{dropped}%")
-    @iut.error("Could not resend some dropped packets. They have been lost. All is still OK, I could compensate")
-    @iut.fatal("Unable to perform action, too many dropped packets. Functional degradation.")
+    require 'digest'
+    flow_id = Digest::SHA256.hexdigest("#{Time.now.to_i}#{rand(4000000)}")
+
+    @iut.event(flow_id, "This is a test event")
   end
 end
 
@@ -126,7 +96,7 @@ Bug reports and feature requests are welcome by email to barney dot de dot villi
 
 ## Notes
 
-Though out of scope for the provider, auditors should take into account encoding, serialization, and other NFRs.
+The interface for auditors is still not stable and therefore subject to change.
 
 ## License
 
