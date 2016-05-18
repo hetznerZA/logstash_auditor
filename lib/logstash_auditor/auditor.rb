@@ -1,4 +1,6 @@
 require 'json'
+require "net/http"
+require "uri"
 
 module LogstashAuditor
   class LogstashAuditor
@@ -28,19 +30,18 @@ module LogstashAuditor
     def send_event(data)
       uri = URI.parse(@configuration["host_url"])
       http = Net::HTTP.new(uri.host, uri.port)
-      #http.use_ssl = true #TODO CHECK IF WE NEED TO PUT THIS BACK
       http.read_timeout = @configuration["timeout"]
       http.open_timeout = @configuration["timeout"]
-      #http.verify_mode = OpenSSL::SSL::VERIFY_NONE #TODO check if we need implement and test the verification scheme of the logstash server cert
-      #request = Net::HTTP::Post.new(uri.request_uri)
+
+      if @configuration["use_ssl"]
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
+
       request = Net::HTTP::Post.new(uri.request_uri, initheader = {'Content-Type' =>'application/json'})
       request.basic_auth(@configuration["username"], @configuration["password"])
-
-      #TODO not yet sure what is the best way to send information to logstash.
-      #sending as a map will replace spaces with + in logs
-      #sending as combined json string will add http %% characters to logstash
-      #sending as base64 encoded will require decoding in logstash filters
       request.body = data.to_json
+
       response = http.request(request)
 
       case response.code
@@ -57,6 +58,10 @@ module LogstashAuditor
     def configuration_is_good(configuration)
       unless configuration.include?("host_url")
         puts "Parameter host_url not provided in configuration"
+        return false
+      end
+      unless configuration.include?("use_ssl")
+        puts "Parameter use_ssl not provided in configuration"
         return false
       end
       unless configuration.include?("username")

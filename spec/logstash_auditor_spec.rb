@@ -5,9 +5,11 @@ describe LogstashAuditor do
     @iut = LogstashAuditor::LogstashAuditor.new
     @invalid_logstash_configuration = { "bla" => "bla"}
     @valid_logstash_configuration = { "host_url" => "http://localhost:8080",
+                              "use_ssl"  => false,
                               "username" => "something",
                               "password" => "something",
                               "timeout"  => 3}
+
     @iut.configure(@valid_logstash_configuration)
 
     @elasticsearch = LogstashAuditor::ElasticSearchTestAPI.new('http://localhost:9200')
