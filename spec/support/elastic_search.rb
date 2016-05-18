@@ -13,7 +13,7 @@ module LogstashAuditor
       @client.index  index: 'flow_id', type: 'my-document', id: 1, body: { title: 'flow_id' }
       @client.indices.refresh index: 'flow_id'
       result = @client.search index: '',
-                              fields: ['message', 'flow_id'],
+                              fields: ['message'],
                               sort:
                               {
                                 'timestamp': { order: 'desc'}
@@ -22,7 +22,7 @@ module LogstashAuditor
                               {
                                 query:
                                 {
-                                  match: { 'flow_id': flow_id}
+                                  match: { 'message': "*#{flow_id}*"}
                                 }
                               }
       #TODO currently the search above searches all indexes.  Ideally we want to only search the flow_id index

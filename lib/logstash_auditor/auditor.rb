@@ -19,9 +19,32 @@ module LogstashAuditor
       @has_been_configured = true
     end
 
-    def event(flow_id, message)
-      raise ArgumentError, "No flow id provided" if flow_id == nil
-      data = { "flow_id" => flow_id, "message" => message }
+    def debug(data)
+      event(data)
+    end
+
+    def info(data)
+      event(data)
+    end
+
+    def error(data)
+      event(data)
+    end
+
+    def warn(data)
+      event(data)
+    end
+
+    def fatal(data)
+      event(data)
+    end
+
+    def <<(data)
+      event(data)
+    end
+
+    def event(data)
+      data = { "message" => data }
       send_event( data )
     end
 

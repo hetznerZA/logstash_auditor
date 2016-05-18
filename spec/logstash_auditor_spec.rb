@@ -40,24 +40,24 @@ describe LogstashAuditor do
 
   context "when given event" do
     it "should submit event to logstash with data received" do
-      test_id = @elasticsearch.create_flow_id
+      flow_identifier = @elasticsearch.create_flow_id
       debug_message = "some debug message"
 
-      @iut.event(test_id, debug_message)
+      @iut.event("rspec_testing:#{flow_identifier}:#{Time.now.utc}: #{debug_message}")
       sleep(2) #Allow the event to be saved in Elastic Search before trying to search for it.
-      found_event_message = @elasticsearch.search_for_flow_id(test_id)
+      found_event_message = @elasticsearch.search_for_flow_id(flow_identifier)
 
       expect(found_event_message).to be_truthy #Not nil
       expect(found_event_message.include?(debug_message)).to eq(true)
     end
 
     it "should submit event without data, if no data was provided" do
-      test_id = @elasticsearch.create_flow_id
+      flow_identifier = @elasticsearch.create_flow_id
       debug_message = ""
 
-      @iut.event(test_id, debug_message)
+      @iut.event("rspec_testing:#{flow_identifier}:#{Time.now.utc}: #{debug_message}")
       sleep(2) #Allow the event to be saved in Elastic Search before trying to search for it.
-      found_event_message = @elasticsearch.search_for_flow_id(test_id)
+      found_event_message = @elasticsearch.search_for_flow_id(flow_identifier)
 
       expect(found_event_message).to be_truthy #Not nil
       expect(found_event_message.include?(debug_message)).to eq(true)
