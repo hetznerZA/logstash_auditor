@@ -5,6 +5,7 @@ This gem provides the logstash auditor that can be plugged into the SOAR archite
 ## State of the API
 
 This auditor is to be extended with NFR support pending behavioural specifications.
+Note that the interface for auditors is still not completely stable and therefore subject to change.
 
 ## Installation
 
@@ -46,43 +47,41 @@ Debugging the docker image:
 
 Initialize and configure the auditor so:
 
-```
+```ruby
 @iut = LogstashAuditor::LogstashAuditor.new
 @logstash_configuration =
 { "host_url" => "http://localhost:8080",
-  "use_ssl"  => false,
-  "username" => "something",
-  "password" => "something",
+  "username" => "auditorusername",
+  "password" => "auditorpassword",
   "timeout"  => 3}
-@iut.configure(@valid_logstash_configuration)
+@iut.configure(@logstash_configuration)
 ```
 
-Audit using the API methods, e.g.:
+Audit using the API methods inherited from SoarAuditorApi::SoarAuditorAPI, e.g.:
 
-```
-@iut.event(flow_id, "This is a test event")
+```ruby
+@iut.warn("#{flow_id}:This is a test event")
 ```
 
 ## Detailed example
 
-```
+```ruby
 require 'logstash_auditor'
 
 class Main
   def test_sanity
     @iut = LogstashAuditor::LogstashAuditor.new
-    @valid_logstash_configuration =
+    @logstash_configuration =
     { "host_url" => "http://localhost:8080",
-      "use_ssl"  => false,
-      "username" => "something",
-      "password" => "something",
+      "username" => "auditorusername",
+      "password" => "auditorpassword",
       "timeout"  => 3}
-    @iut.configure(@valid_logstash_configuration)
+    @iut.configure(@logstash_configuration)
 
     require 'digest'
     flow_id = Digest::SHA256.hexdigest("#{Time.now.to_i}#{rand(4000000)}")
 
-    @iut.event(flow_id, "This is a test event")
+    @iut.warn("#{flow_id}:This is a test event")
   end
 end
 
@@ -93,10 +92,6 @@ main.test_sanity
 ## Contributing
 
 Bug reports and feature requests are welcome by email to barney dot de dot villiers at hetzner dot co dot za. This gem is sponsored by Hetzner (Pty) Ltd (http://hetzner.co.za)
-
-## Notes
-
-The interface for auditors is still not stable and therefore subject to change.
 
 ## License
 
