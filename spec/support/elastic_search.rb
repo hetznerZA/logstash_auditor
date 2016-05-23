@@ -9,9 +9,9 @@ module LogstashAuditor
       @client.transport.reload_connections!
     end
 
-    def search_for_flow_id(flow_id)
-      @client.index  index: 'flow_id', type: 'my-document', id: 1, body: { title: 'flow_id' }
-      @client.indices.refresh index: 'flow_id'
+    def search_for_test_id(test_id)
+      @client.index  index: 'message', type: 'my-document', id: 1, body: { title: 'message' }
+      @client.indices.refresh index: 'message'
       result = @client.search index: '',
                               fields: ['message'],
                               sort:
@@ -22,7 +22,7 @@ module LogstashAuditor
                               {
                                 query:
                                 {
-                                  match: { 'message': "*#{flow_id}*"}
+                                  match: { 'message': "*#{test_id}*"}
                                 }
                               }
       #TODO currently the search above searches all indexes.  Ideally we want to only search the flow_id index
@@ -34,7 +34,7 @@ module LogstashAuditor
       end
     end
 
-    def create_flow_id
+    def create_test_id
       return Digest::SHA256.hexdigest("#{Time.now.to_i}#{rand(4000000)}")
     end
 

@@ -19,48 +19,32 @@ describe LogstashAuditor do
     expect(LogstashAuditor::VERSION).not_to be nil
   end
 
-  context "when initializing" do
+  context "when configuring" do
     it 'should accept a valid auditor configuration' do
-      @iut.configure(@valid_logstash_configuration)
-      expect(@iut.has_been_configured).to eq(true)
+      expect(@iut.configuration_is_valid(@valid_logstash_configuration)).to eq(true)
     end
 
-    it 'should raise ArgumentError if no configuration is specified' do
-      expect {
-        @iut.configure(nil)
-      }.to raise_error(ArgumentError, "No configuration provided")
-    end
-
-    it 'should raise ArgumentError if invalid configuration is specified' do
-      expect {
-        @iut.configure(@invalid_logstash_configuration)
-      }.to raise_error(ArgumentError, "Invalid configuration provided")
+    it 'should reject an invalid auditor configuration' do
+      expect(@iut.configuration_is_valid(@invalid_logstash_configuration)).to eq(false)
     end
   end
 
-  context "when given event" do
-    it "should submit event to logstash with data received" do
-      flow_identifier = @elasticsearch.create_flow_id
-      debug_message = "some debug message"
+  context "when given audit" do
+    it "should submit audit to logstash with data received" do
+      #Create an unique test identifier that will be used to correlate the submitted test audit
+      #with the located message in elastic search.
+      test_identifier = @elasticsearch.create_test_id
 
-      @iut.event("rspec_testing:#{flow_identifier}:#{Time.now.utc}: #{debug_message}")
-      sleep(2) #Allow the event to be saved in Elastic Search before trying to search for it.
-      found_event_message = @elasticsearch.search_for_flow_id(flow_identifier)
+      debug_message = "some audit event message"
+      @iut.audit("rspec_testing:#{test_identifier}:#{Time.now.utc}:#{debug_message}")
 
-      expect(found_event_message).to be_truthy #Not nil
-      expect(found_event_message.include?(debug_message)).to eq(true)
+      sleep(4) #Allow the event to be saved in Elastic Search before trying to search for it.
+
+      found_event_message = @elasticsearch.search_for_test_id("rspec_testing:#{test_identifier}")
+      expect(found_event_message).to be_truthy #Check if audit test identifier has been found
+      expect(found_event_message.include?(debug_message)).to eq(true) #Check if the correct audit message was stored
     end
 
-    it "should submit event without data, if no data was provided" do
-      flow_identifier = @elasticsearch.create_flow_id
-      debug_message = ""
-
-      @iut.event("rspec_testing:#{flow_identifier}:#{Time.now.utc}: #{debug_message}")
-      sleep(2) #Allow the event to be saved in Elastic Search before trying to search for it.
-      found_event_message = @elasticsearch.search_for_flow_id(flow_identifier)
-
-      expect(found_event_message).to be_truthy #Not nil
-      expect(found_event_message.include?(debug_message)).to eq(true)
-    end
+    it "should extract the level, flow, time and message fields on logstash server into separate fields"
   end
 end

@@ -1,56 +1,25 @@
-require 'json'
 require "net/http"
-require "uri"
+require "soar_auditor_api"
 
 module LogstashAuditor
-  class LogstashAuditor
-    attr_reader :has_been_configured
-    attr_reader :configuration
+  class LogstashAuditor < SoarAuditorApi::SoarAuditorAPI
 
-    def initialize
-      @has_been_configured = false
+    def configuration_is_valid(configuration = {})
+      required_parameters = ["host_url", "use_ssl", "username", "password"]
+      required_parameters.each { |parameter| return false unless configuration.include?(parameter) }
+      return true
+
+      #TODO Remove the use ssl paramter by better looking at the url.
     end
 
-    def configure(configuration = nil)
-      raise ArgumentError, "No configuration provided" if configuration == nil
-      raise ArgumentError, "Invalid configuration provided" unless configuration_is_good(configuration)
-
-      @configuration = configuration
-      @has_been_configured = true
-    end
-
-    def debug(data)
-      event(data)
-    end
-
-    def info(data)
-      event(data)
-    end
-
-    def error(data)
-      event(data)
-    end
-
-    def warn(data)
-      event(data)
-    end
-
-    def fatal(data)
-      event(data)
-    end
-
-    def <<(data)
-      event(data)
-    end
-
-    def event(data)
+    def audit(data)
       data = { "message" => data }
       send_event( data )
     end
 
     private
 
-    def send_event(data)
+    def create_http_transport
       uri = URI.parse(@configuration["host_url"])
       http = Net::HTTP.new(uri.host, uri.port)
       http.read_timeout = @configuration["timeout"]
@@ -60,6 +29,12 @@ module LogstashAuditor
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
+      return http, uri
+    end
+
+    def send_event(data)
+      http, uri = create_http_transport
+
 
       request = Net::HTTP::Post.new(uri.request_uri, initheader = {'Content-Type' =>'application/json'})
       request.basic_auth(@configuration["username"], @configuration["password"])
@@ -76,30 +51,6 @@ module LogstashAuditor
         puts "Failure " + response.code + " communicating with logstash"
       end
       return :failure
-    end
-
-    def configuration_is_good(configuration)
-      unless configuration.include?("host_url")
-        puts "Parameter host_url not provided in configuration"
-        return false
-      end
-      unless configuration.include?("use_ssl")
-        puts "Parameter use_ssl not provided in configuration"
-        return false
-      end
-      unless configuration.include?("username")
-        puts "Parameter username not provided in configuration"
-        return false
-      end
-      unless configuration.include?("password")
-        puts "Parameter password not provided in configuration"
-        return false
-      end
-      unless configuration.include?("timeout")
-        puts "Parameter timeout not provided in configuration"
-        return false
-      end
-      return true
     end
   end
 end
