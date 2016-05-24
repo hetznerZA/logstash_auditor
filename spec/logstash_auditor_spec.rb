@@ -28,7 +28,7 @@ describe LogstashAuditor do
     expect(LogstashAuditor::VERSION).not_to be nil
   end
 
-  context "when configured by SoarAuditorAPI" do
+  context "when configured by AuditorAPI" do
     it 'should accept a valid configuration' do
       expect(@iut.configuration_is_valid(@valid_logstash_configuration)).to eq(true)
     end
@@ -38,7 +38,7 @@ describe LogstashAuditor do
     end
   end
 
-  context "when asked by SoarAuditorAPI to audit" do
+  context "when asked by AuditorAPI to audit" do
     it "should submit audit to logstash with data received" do
       #Create an unique test identifier that will be used to correlate the submitted test audit
       #with the audit found by elastic search.

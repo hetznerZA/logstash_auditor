@@ -2,16 +2,16 @@ require "net/http"
 require "soar_auditor_api"
 
 module LogstashAuditor
-  class LogstashAuditor < SoarAuditorApi::SoarAuditorAPI
+  class LogstashAuditor < SoarAuditorApi::AuditorAPI
 
-    #inversion of control method required by the SoarAuditorAPI
+    #inversion of control method required by the AuditorAPI
     def configuration_is_valid(configuration)
       required_parameters = ["host_url", "username", "password"]
       required_parameters.each { |parameter| return false unless configuration.include?(parameter) }
       return true
     end
 
-    #inversion of control method required by the SoarAuditorAPI
+    #inversion of control method required by the AuditorAPI
     def audit(audit_data)
       request = create_request(audit_data)
       http    = create_http_transport

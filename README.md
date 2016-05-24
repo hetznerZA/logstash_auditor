@@ -57,7 +57,7 @@ Initialize and configure the auditor so:
 @iut.configure(@logstash_configuration)
 ```
 
-Audit using the API methods inherited from SoarAuditorApi::SoarAuditorAPI, e.g.:
+Audit using the API methods inherited from SoarAuditorApi::AuditorAPI, e.g.:
 
 ```ruby
 @iut.warn("#{flow_id}:This is a test event")
