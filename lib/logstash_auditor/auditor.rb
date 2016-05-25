@@ -30,7 +30,7 @@ module LogstashAuditor
     end
 
     def create_request(audit_data)
-      request = Net::HTTP::Post.new("/", initheader = {'Content-Type' => 'application/json'})
+      request = Net::HTTP::Post.new("/", initheader = {'Content-Type' => 'text/plain'})
       request.basic_auth(@configuration["username"], @configuration["password"])
       request.body = audit_data
       return request

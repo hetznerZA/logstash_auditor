@@ -45,11 +45,11 @@ describe LogstashAuditor do
       test_identifier = @elasticsearch.create_test_id
 
       debug_message = "some audit event message"
-      @iut.audit("rspec_testing:#{test_identifier}:#{Time.now.utc}:#{debug_message}")
+      @iut.audit("debug:#{test_identifier}:#{Time.now.utc.iso8601(3)}:#{debug_message}")
 
       sleep(4) #Allow the event to be saved in Elastic Search before trying to search for it.
 
-      found_event_message = @elasticsearch.search_for_test_id("rspec_testing:#{test_identifier}")
+      found_event_message = @elasticsearch.search_for_test_id("debug:#{test_identifier}")
       expect(found_event_message).to be_truthy #Check if audit test identifier has been found
       expect(found_event_message.include?(debug_message)).to eq(true) #Check if the correct audit message was stored
     end
