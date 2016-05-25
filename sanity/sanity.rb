@@ -14,7 +14,7 @@ class Main
     require 'digest'
     flow_id = Digest::SHA256.hexdigest("#{Time.now.to_i}#{rand(4000000)}")
 
-    @iut.warn("#{flow_id}:#{Time.now.utc.iso8601(3)}::test1234")
+    @iut.warn("#{flow_id}:#{Time.now.utc.iso8601(3)}:test1234")
   end
 end
 
