@@ -40,17 +40,17 @@ describe LogstashAuditor do
 
   context "when asked by AuditorAPI to audit" do
     it "should submit audit to logstash with data received" do
-      #Create an unique test identifier that will be used to correlate the submitted test audit
+      #Create an unique test flow_id that will be used to correlate the submitted test audit
       #with the audit found by elastic search.
-      test_identifier = @elasticsearch.create_test_id
+      flow_id = @elasticsearch.create_flow_id
 
       debug_message = "some audit event message"
-      @iut.audit("debug:#{test_identifier}:#{Time.now.utc.iso8601(3)}:#{debug_message}")
+      @iut.audit("debug:#{flow_id}:#{Time.now.utc.iso8601(3)}:#{debug_message}")
 
       sleep(4) #Allow the event to be saved in Elastic Search before trying to search for it.
 
-      found_event_message = @elasticsearch.search_for_test_id("debug:#{test_identifier}")
-      expect(found_event_message).to be_truthy #Check if audit test identifier has been found
+      found_event_message = @elasticsearch.search_for_flow_id(flow_id)
+      expect(found_event_message).to be_truthy #Check if audit test flow_id has been found
       expect(found_event_message.include?(debug_message)).to eq(true) #Check if the correct audit message was stored
     end
 
