@@ -23,6 +23,11 @@ Or install it yourself as:
 
     $ gem install logstash_auditor
 
+## Configuration of Logstash Server
+
+The logstash server must be configured using the configuration in the folder spec/support/logstash_conf.d
+This configuration is used by the docker image during the TDD tests which ensures that this gem and the server configuration is compatible.
+
 ## Testing
 
 Behavioural driven testing can be performed by testing against a local ELK docker image:
@@ -79,10 +84,7 @@ class Main
       "timeout"  => 3}
     @iut.configure(@logstash_configuration)
 
-    require 'digest'
-    flow_id = Digest::SHA256.hexdigest("#{Time.now.to_i}#{rand(4000000)}")
-
-    @iut.warn("#{flow_id}:#{Time.now.utc.iso8601(3)}:test1234")
+    @iut.warn("#{SecureRandom.hex(32)}:#{Time.now.utc.iso8601(3)}:test1234")
   end
 end
 

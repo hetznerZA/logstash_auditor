@@ -26,6 +26,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "elasticsearch", "~> 1"
 
   spec.add_dependency "http", "~> 2"
-  spec.add_dependency "soar_auditor_api", "~> 0.0.4"
+  spec.add_dependency "soar_auditor_api", "~> 0.0.5"
 
 end

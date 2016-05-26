@@ -5,7 +5,7 @@ module LogstashAuditor
   class LogstashAuditor < SoarAuditorApi::AuditorAPI
 
     #inversion of control method required by the AuditorAPI
-    def configuration_is_valid(configuration)
+    def configuration_is_valid?(configuration)
       required_parameters = ["host_url", "username", "password"]
       required_parameters.each { |parameter| return false unless configuration.include?(parameter) }
       return true

@@ -1,5 +1,8 @@
 module LogstashAuditor
 
+  SEARCH_POLLING_MAXIMUM_WAIT  = 5   unless defined? SEARCH_POLLING_MAXIMUM_WAIT;  SEARCH_POLLING_MAXIMUM_WAIT.freeze
+  SEARCH_POLLLING_INTERVAL     = 0.5 unless defined? SEARCH_POLLLING_INTERVAL;     SEARCH_POLLLING_INTERVAL.freeze
+
   class ElasticSearchTestAPI
     require 'elasticsearch'
 
@@ -9,7 +12,25 @@ module LogstashAuditor
       @client.transport.reload_connections!
     end
 
+    def create_flow_id
+      return SecureRandom.hex(32)
+    end
+
     def search_for_flow_id(flow_id)
+      #Elastic search might take some time to process and make the audit available for searching
+      total_busy_wait = 0
+      found_event_message = nil
+      while (total_busy_wait < SEARCH_POLLING_MAXIMUM_WAIT) and (found_event_message.nil?) do
+        found_event_message = search(flow_id)
+        sleep(SEARCH_POLLLING_INTERVAL) if found_event_message.nil?
+        total_busy_wait += SEARCH_POLLLING_INTERVAL
+      end
+      return found_event_message
+    end
+
+    private
+
+    def search(flow_id)
       @client.index  index: 'audit_flow_id', type: 'my-document', id: 1, body: { title: 'audit_flow_id' }
       @client.indices.refresh index: 'flow_id'
       result = @client.search index: '',
@@ -31,10 +52,5 @@ module LogstashAuditor
         return nil
       end
     end
-
-    def create_flow_id
-      return Digest::SHA256.hexdigest("#{Time.now.to_i}#{rand(9999999)}")
-    end
-
   end
 end
