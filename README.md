@@ -72,7 +72,9 @@ Audit using the API methods inherited from SoarAuditorApi::AuditorAPI, e.g.:
 
 ```ruby
 require 'logstash_auditor'
+require 'soar_auditing_format'
 require 'time'
+require 'securerandom'
 
 class Main
   def test_sanity
@@ -83,8 +85,10 @@ class Main
       "password" => "auditorpassword",
       "timeout"  => 3}
     @iut.configure(@logstash_configuration)
+    @iut.set_audit_level(:debug)
 
-    @iut.warn("#{SecureRandom.hex(32)}:#{Time.now.utc.iso8601(3)}:test1234")
+    my_optional_field = SoarAuditingFormatter::Formatter.optional_field_format("mykey", "myfield")
+    @iut.debug(SoarAuditingFormatter::Formatter.format(:debug,'my-sanity-service-id',SecureRandom.hex(32),Time.now,"#{my_optional_field} test message with optional field"))
   end
 end
 

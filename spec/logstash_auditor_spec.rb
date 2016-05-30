@@ -54,7 +54,7 @@ describe LogstashAuditor do
       my_optional_field = SoarAuditingFormatter::Formatter.optional_field_format("somekey", "somevalue")
       debug_message = "#{my_optional_field} some audit event message"
 
-      @iut.audit(SoarAuditingFormatter::Formatter.format(:debug,flow_id,Time.now,debug_message))
+      @iut.audit(SoarAuditingFormatter::Formatter.format(:debug,'my-rspec-service-id',flow_id,Time.now,debug_message))
       found_event_message = @elasticsearch.search_for_flow_id(flow_id)
 
       expect(found_event_message).to be_truthy #Check if audit test flow_id has been found
