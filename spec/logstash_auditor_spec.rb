@@ -51,8 +51,10 @@ describe LogstashAuditor do
       #with the audit found by elastic search.
       flow_id = @elasticsearch.create_flow_id
 
-      debug_message = "some audit event message"
-      @iut.audit("debug:#{flow_id}:#{Time.now.utc.iso8601(3)}:#{debug_message}")
+      my_optional_field = SoarAuditingFormatter::Formatter.optional_field_format("somekey", "somevalue")
+      debug_message = "#{my_optional_field} some audit event message"
+
+      @iut.audit(SoarAuditingFormatter::Formatter.format(:debug,flow_id,Time.now,debug_message))
       found_event_message = @elasticsearch.search_for_flow_id(flow_id)
 
       expect(found_event_message).to be_truthy #Check if audit test flow_id has been found
@@ -83,7 +85,7 @@ describe LogstashAuditor do
     it "should raise StandardError if a timeout occurs trying to establish a connection" do
       expect {
         @iut.configure(@valid_logstash_configuration.dup.merge("timeout" => 0))
-        @iut.audit("message")
+        @iut.audit("message with zero timeout")
       }.to raise_error(StandardError, 'Failed to create connection')
     end
 

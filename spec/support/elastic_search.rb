@@ -32,7 +32,7 @@ module LogstashAuditor
 
     def search(flow_id)
       @client.index  index: 'audit_flow_id', type: 'my-document', id: 1, body: { title: 'audit_flow_id' }
-      @client.indices.refresh index: 'flow_id'
+      @client.indices.refresh index: 'audit_flow_id'
       result = @client.search index: '',
                               fields: ['message', 'audit_flow_id'],
                               sort:

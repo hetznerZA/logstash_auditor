@@ -11,7 +11,7 @@ juddi-distro-*
 *.swp
 *.gem
 *.rbc
-/Gemfile.lock
+Gemfile.lock
 /.config
 /coverage/
 /InstalledFiles
