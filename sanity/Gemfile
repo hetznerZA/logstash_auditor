@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-gem 'logstash_auditor', "~> 0.0.15"
+gem 'logstash_auditor', "~> 0.0.16"
 gem "soar_auditing_format", "~> 0.0.5"
