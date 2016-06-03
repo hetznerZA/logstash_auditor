@@ -4,7 +4,7 @@ describe LogstashAuditor do
   before :all do
     @iut = LogstashAuditor::LogstashAuditor.new
     @invalid_logstash_configuration = { "foo" => "bar"}
-    @valid_logstash_configuration = { "host_url" => "http://localhost:8080",
+    @valid_logstash_configuration = { "host_url" => "http://localhost:8081",
                                       "username" => "auditorusername",
                                       "password" => "auditorpassword",
                                       "timeout"  => 3}
@@ -70,7 +70,7 @@ describe LogstashAuditor do
 
     it "should raise StandardError if logstash connection fails, given incorrect host" do
       expect {
-        @iut.configure(@valid_logstash_configuration.dup.merge("host_url" => "http://somewhere:8080"))
+        @iut.configure(@valid_logstash_configuration.dup.merge("host_url" => "http://somewhere:8081"))
         @iut.audit("message")
       }.to raise_error(StandardError, 'Failed to create connection')
     end

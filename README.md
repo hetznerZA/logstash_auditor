@@ -32,7 +32,7 @@ This configuration is used by the docker image during the TDD tests which ensure
 
 Behavioural driven testing can be performed by testing against a local ELK docker image:
 
-    $ sudo docker run -d -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8080:8080 sebp/elk
+    $ sudo docker run -d -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8081:8080 sebp/elk
 
 Wait about 30 seconds for image to fire up. Then perform the tests:
 
@@ -57,7 +57,7 @@ Initialize and configure the auditor so:
 ```ruby
 @iut = LogstashAuditor::LogstashAuditor.new
 @logstash_configuration =
-{ "host_url" => "http://localhost:8080",
+{ "host_url" => "http://localhost:8081",
   "username" => "auditorusername",
   "password" => "auditorpassword",
   "timeout"  => 3}

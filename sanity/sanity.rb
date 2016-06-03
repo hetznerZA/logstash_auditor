@@ -7,7 +7,7 @@ class Main
   def test_sanity
     @iut = LogstashAuditor::LogstashAuditor.new
     @logstash_configuration =
-    { "host_url" => "http://localhost:8080",
+    { "host_url" => "http://localhost:8081",
       "username" => "auditorusername",
       "password" => "auditorpassword",
       "timeout"  => 3}
