@@ -109,9 +109,5 @@ describe LogstashAuditor do
         @iut.audit("message")
       }.to raise_error(StandardError, 'Failed to create connection')
     end
-
-    it "should force a failure to test jenkins" do
-      expect(true).to eq(false)
-    end
   end
 end
