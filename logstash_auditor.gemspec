@@ -27,6 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "soar_auditing_format", "~> 0.0.5"
 
   spec.add_dependency "http", "~> 2"
-  spec.add_dependency "soar_auditor_api", "~> 0.0.11"
+  spec.add_dependency "soar_auditor_api", "~> 0.0.12"
 
 end
