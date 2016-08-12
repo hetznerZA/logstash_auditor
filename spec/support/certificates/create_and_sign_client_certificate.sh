@@ -3,7 +3,7 @@
 #gleaned from
 #https://jamielinux.com/docs/openssl-certificate-authority/create-the-intermediate-pair.html
 
-NAME=architecture.test.client
+NAME=$1
 
 mkdir -p client
 cd client
