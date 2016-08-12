@@ -20,16 +20,16 @@ openssl req -batch -config ../intermediate_ca/openssl.cnf \
       -new -sha256 -out $NAME.csr.pem
 
 #Sign with intermediate ca
-cd ..
-openssl ca -batch -config ../intermediate_ca/openssl.cnf \
+cd ../intermediate_ca
+openssl ca -batch -config openssl.cnf \
       -passin pass:testing \
       -extensions server_cert -days 375 -notext -md sha256 \
-      -in client/$NAME.csr.pem \
-      -out client/$NAME.cert.pem
- chmod 444 client/$NAME.cert.pem
+      -in ../client/$NAME.csr.pem \
+      -out ../client/$NAME.cert.pem
+ chmod 444 ../client/$NAME.cert.pem
 
 #Verify the certificate
-cd client
+cd ../client
 openssl x509 -noout -text -in $NAME.cert.pem
 
 cd ..
