@@ -40,4 +40,9 @@ openssl ca -batch -config openssl.cnf -extensions v3_intermediate_ca \
 #verify the signed intermediate certificate
 openssl x509 -noout -text -in intermediate/certs/intermediate.ca.cert.pem
 
+#create certificate chain file
+cat intermediate/certs/intermediate.ca.cert.pem \
+      certs/root.ca.cert.pem > intermediate/certs/ca-chain.cert.pem
+chmod 444 intermediate/certs/ca-chain.cert.pem
+
 cd ../
