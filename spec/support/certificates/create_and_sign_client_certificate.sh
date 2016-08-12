@@ -5,7 +5,6 @@
 
 NAME=architecture.test.client
 
-rm -rf client
 mkdir -p client
 cd client
 
@@ -14,7 +13,7 @@ openssl genrsa -passout pass:testing -aes256 -out $NAME.private.pem 4096
 chmod 400 $NAME.private.pem
 
 #Create signing request
-openssl req -batch -config ../ca/intermediate/openssl.cnf \
+openssl req -batch -config ../intermediate_ca/openssl.cnf \
       -passin pass:testing \
       -key $NAME.private.pem \
       -subj "/C=ZA/ST=Western Cape/L=Durbanville/O=Hetzner/CN=$NAME" \
@@ -22,7 +21,7 @@ openssl req -batch -config ../ca/intermediate/openssl.cnf \
 
 #Sign with intermediate ca
 cd ..
-openssl ca -batch -config ca/intermediate/openssl.cnf \
+openssl ca -batch -config ../intermediate_ca/openssl.cnf \
       -passin pass:testing \
       -extensions server_cert -days 375 -notext -md sha256 \
       -in client/$NAME.csr.pem \

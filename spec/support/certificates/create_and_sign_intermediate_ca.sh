@@ -3,7 +3,7 @@
 #gleaned from
 #https://jamielinux.com/docs/openssl-certificate-authority/create-the-intermediate-pair.html
 
-cd ca/intermediate
+cd intermediate_ca
 
 rm -rf certs crl csr newcerts private
 rm -f serial* crlnumber index*
@@ -30,19 +30,20 @@ chmod 444 csr/intermediate.ca.csr.pem
 openssl x509 -noout -text -in csr/intermediate.ca.csr.pem
 
 #sign the intermediate certificate with the root certificate
-cd ../
+cd ../root_ca
 openssl ca -batch -config openssl.cnf -extensions v3_intermediate_ca \
       -passin pass:testing \
       -days 3650 -notext -md sha256 \
-      -in intermediate/csr/intermediate.ca.csr.pem \
-      -out intermediate/certs/intermediate.ca.cert.pem
+      -in ../intermediate_ca/csr/intermediate.ca.csr.pem \
+      -out ../intermediate_ca/certs/intermediate.ca.cert.pem
 
 #verify the signed intermediate certificate
-openssl x509 -noout -text -in intermediate/certs/intermediate.ca.cert.pem
+cd ../intermediate_ca
+openssl x509 -noout -text -in certs/intermediate.ca.cert.pem
 
 #create certificate chain file
-cat intermediate/certs/intermediate.ca.cert.pem \
-      certs/root.ca.cert.pem > intermediate/certs/ca-chain.cert.pem
-chmod 444 intermediate/certs/ca-chain.cert.pem
+cat certs/intermediate.ca.cert.pem \
+      ../root_ca/certs/root.ca.cert.pem > certs/ca-chain.cert.pem
+chmod 444 certs/ca-chain.cert.pem
 
 cd ../

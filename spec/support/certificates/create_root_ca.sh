@@ -1,5 +1,5 @@
 #! /bin/bash
-cd ca
+cd root_ca
 
 rm -rf certs crl newcerts private
 rm -f serial* crlnumber index*
