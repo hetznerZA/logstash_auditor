@@ -32,7 +32,7 @@ This configuration is used by the docker image during the TDD tests which ensure
 
 Behavioural driven testing can be performed by testing against a local ELK docker image:
 
-    $ sudo docker run -d -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8081:8080 sebp/elk
+    $ docker run -d --name elk_test_service -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -v $(pwd)/spec/support/certificates:/etc/logstash/certs -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8081:8080 sebp/elk
 
 Wait about 30 seconds for image to fire up. Then perform the tests:
 
@@ -42,13 +42,13 @@ Note that in order to ensure that the processing has occurred on Elastic Search
 there is a 2 second delay between each event submission request and the search request
 
 Afterwards destroy the running docker image as follows:
-    $ sudo docker ps
-    $ sudo docker stop <CONTAINER_ID>
+    $ docker ps
+    $ docker stop <CONTAINER_ID>
 
 Debugging the docker image:
-    $ sudo docker exec -it <CONTAINER_ID> bash
-    $ sudo docker stop $(sudo docker ps -a -q)
-    $ sudo docker rm -f $(sudo docker ps -a -q)
+    $ docker exec -it elk_test_service bash
+    $ docker stop elk_test_service
+    $ docker rm -f elk_test_service
 
 ## Usage
 
