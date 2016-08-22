@@ -53,3 +53,4 @@ build/
 /spec/support/certificates/**/index*
 /spec/support/certificates/**/serial*
 /spec/support/certificates/**/crlnumber
+/spec/support/certificates/**/*.jks
