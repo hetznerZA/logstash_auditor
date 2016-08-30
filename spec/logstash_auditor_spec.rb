@@ -4,10 +4,15 @@ describe LogstashAuditor do
   before :all do
     @iut = LogstashAuditor::LogstashAuditor.new
     @invalid_logstash_configuration = { "foo" => "bar"}
-    @valid_logstash_configuration = { "host_url" => "http://localhost:8081",
-                                      "username" => "auditorusername",
-                                      "password" => "auditorpassword",
-                                      "timeout"  => 3}
+    @valid_certificate_auth_logstash_configuration = { "host_url"    => "https://localhost:8081",
+                                                       "public_key"  => File.read("spec/support/certificates/selfsigned/selfsigned_registered.cert.pem"),
+                                                       "private_key" => File.read("spec/support/certificates/selfsigned/selfsigned_registered.private.nopass.pem"),
+                                                       "timeout"     => 3}
+    @valid_basic_auth_logstash_configuration = { "host_url" => "https://localhost:8081",
+                                                 "username" => "auditorusername",
+                                                 "password" => "auditorpassword",
+                                                 "timeout"  => 3}
+    @valid_logstash_configuration = @valid_certificate_auth_logstash_configuration
     @iut.configure(@valid_logstash_configuration)
     @elasticsearch = LogstashAuditor::ElasticSearchTestAPI.new('http://localhost:9200')
   end
@@ -36,8 +41,12 @@ describe LogstashAuditor do
   end
 
   context "when configured by AuditorAPI" do
-    it 'should accept a valid configuration' do
-      expect(@iut.configuration_is_valid?(@valid_logstash_configuration)).to eq(true)
+    it 'should accept a valid basic authentication configuration' do
+      expect(@iut.configuration_is_valid?(@valid_basic_auth_logstash_configuration)).to eq(true)
+    end
+
+    it 'should accept a valid certificate based authentication configuration' do
+      expect(@iut.configuration_is_valid?(@valid_certificate_auth_logstash_configuration)).to eq(true)
     end
 
     it 'should reject an invalid configuration' do
