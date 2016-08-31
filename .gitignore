@@ -47,3 +47,10 @@ build/
 
 # unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
 .rvmrc
+
+/spec/support/certificates/**/*.pem
+/spec/support/certificates/**/*.pkcs12
+/spec/support/certificates/**/index*
+/spec/support/certificates/**/serial*
+/spec/support/certificates/**/crlnumber
+/spec/support/certificates/**/*.jks
