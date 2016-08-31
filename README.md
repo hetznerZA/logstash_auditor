@@ -34,7 +34,9 @@ Behavioural driven testing can be performed by testing against a local ELK docke
 
 First you need to generate the certificates needed for authenticating the client to the server and the server itself.
 
-    $ spec/support/certificates/setup_certificates_for_logstash_testing.sh
+    $ ./spec/support/certificates/setup_certificates_for_logstash_testing.sh
+
+Start a docker container with the ELK stack:
 
     $ docker run -d --name elk_test_service -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -v $(pwd)/spec/support/certificates:/etc/logstash/certs -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8081:8080 sebp/elk
 
@@ -52,7 +54,7 @@ Debugging the docker image:
 
 Manual sending of an audit event to docker ELK stack:
 
-    $ curl -iv -E ./spec/support/certificates/selfsigned/selfsigned_registered.cert.pem --key ./selfsigned_registered.private.nopass.pem https://localhost:8081 -d "message=soar_logstash_test" --insecure
+    $ curl -iv -E ./spec/support/certificates/selfsigned/selfsigned_registered.cert.pem --key ./spec/support/certificates/selfsigned/selfsigned_registered.private.nopass.pem https://localhost:8081 -d "message=soar_logstash_test" --insecure
 
 ## Usage
 
