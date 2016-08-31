@@ -8,6 +8,10 @@ describe LogstashAuditor do
                                                        "public_key"  => File.read("spec/support/certificates/selfsigned/selfsigned_registered.cert.pem"),
                                                        "private_key" => File.read("spec/support/certificates/selfsigned/selfsigned_registered.private.nopass.pem"),
                                                        "timeout"     => 3}
+    @valid_unregistered_certificate_auth_logstash_configuration = { "host_url"    => "https://localhost:8081",
+                                                                    "public_key"  => File.read("spec/support/certificates/selfsigned/selfsigned_unregistered.cert.pem"),
+                                                                    "private_key" => File.read("spec/support/certificates/selfsigned/selfsigned_unregistered.private.nopass.pem"),
+                                                                    "timeout"     => 3}
     @valid_basic_auth_logstash_configuration = { "host_url" => "https://localhost:8081",
                                                  "username" => "auditorusername",
                                                  "password" => "auditorpassword",
@@ -86,9 +90,9 @@ describe LogstashAuditor do
 
     it "should raise StandardError if logstash authentication fails" do
       expect {
-        @iut.configure(@valid_logstash_configuration.dup.merge("username" => "wrongauditorusername"))
+        @iut.configure(@valid_unregistered_certificate_auth_logstash_configuration)
         @iut.audit("message")
-      }.to raise_error(StandardError, "Server rejected post with error code 401")
+      }.to raise_error(StandardError, "Failed to create connection")
     end
 
     it "should raise StandardError if a timeout occurs trying to establish a connection" do
@@ -100,9 +104,9 @@ describe LogstashAuditor do
 
     it "should raise StandardError if an error occurs on the server" do
       expect {
-        @iut.configure(@valid_logstash_configuration.dup.merge("username" => "wrongauditorusername"))
+        @iut.configure(@valid_unregistered_certificate_auth_logstash_configuration)
         @iut.audit("message")
-      }.to raise_error(StandardError, "Server rejected post with error code 401")
+      }.to raise_error(StandardError, "Failed to create connection")
     end
 
     it "should raise StandardError if a local error occurs trying to establish a connection" do

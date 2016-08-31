@@ -60,7 +60,6 @@ module LogstashAuditor
 
     def send_request_to_server(http, request)
       response = http.request(request) rescue nil
-      byebug
       raise StandardError, 'Failed to create connection' if response.nil?
       raise StandardError, "Server rejected post with error code #{response.code}" unless response.code == "200"
     end

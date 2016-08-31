@@ -1,6 +1,6 @@
 # LogstashAuditor
 
-This gem provides the logstash auditor that can be plugged into the SOAR architecture.
+This gem provides the logstash auditor that can be plugged into the SOAR architecture. The auditor supports basic and certifcate based authentication to the logstash http input.  Privacy can be ensured by simply using an tls tunnel.
 
 ## State of the API
 
@@ -25,12 +25,16 @@ Or install it yourself as:
 
 ## Configuration of Logstash Server
 
-The logstash server must be configured using the configuration in the folder spec/support/logstash_conf.d
+The logstash server must be configured using the configuration in the folder spec/support/logstash_conf.d and spec/support/certificates.
 This configuration is used by the docker image during the TDD tests which ensures that this gem and the server configuration is compatible.
 
 ## Testing
 
-Behavioural driven testing can be performed by testing against a local ELK docker image:
+Behavioural driven testing can be performed by testing against a local ELK docker image.
+
+First you need to generate the certificates needed for authenticating the client to the server and the server itself.
+
+    $ spec/support/certificates/setup_certificates_for_logstash_testing.sh
 
     $ docker run -d --name elk_test_service -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -v $(pwd)/spec/support/certificates:/etc/logstash/certs -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8081:8080 sebp/elk
 
@@ -41,14 +45,14 @@ Wait about 30 seconds for image to fire up. Then perform the tests:
 Note that in order to ensure that the processing has occurred on Elastic Search
 there is a 2 second delay between each event submission request and the search request
 
-Afterwards destroy the running docker image as follows:
-    $ docker ps
-    $ docker stop <CONTAINER_ID>
-
 Debugging the docker image:
     $ docker exec -it elk_test_service bash
     $ docker stop elk_test_service
     $ docker rm -f elk_test_service
+
+Manual sending of an audit event to docker ELK stack:
+
+    $ curl -iv -E ./spec/support/certificates/selfsigned/selfsigned_registered.cert.pem --key ./selfsigned_registered.private.nopass.pem https://localhost:8081 -d "message=soar_logstash_test" --insecure
 
 ## Usage
 
