@@ -26,7 +26,7 @@ module LogstashAuditor
     end
 
     def certificate_auth_configuration_valid?(configuration)
-      required_parameters = ['host_url', 'public_key', 'private_key']
+      required_parameters = ['host_url', 'certificate', 'private_key']
       required_parameters.each { |parameter| return false unless configuration.include?(parameter) }
       return true
     end
@@ -42,7 +42,7 @@ module LogstashAuditor
     end
 
     def add_certificate_authentication(http)
-      http.cert = OpenSSL::X509::Certificate.new(@configuration['public_key'])
+      http.cert = OpenSSL::X509::Certificate.new(@configuration['certificate'])
       http.key = OpenSSL::PKey::RSA.new(@configuration['private_key'])
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end

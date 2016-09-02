@@ -5,11 +5,11 @@ describe LogstashAuditor do
     @iut = LogstashAuditor::LogstashAuditor.new
     @invalid_logstash_configuration = { "foo" => "bar"}
     @valid_certificate_auth_logstash_configuration = { "host_url"    => "https://localhost:8081",
-                                                       "public_key"  => File.read("spec/support/certificates/selfsigned/selfsigned_registered.cert.pem"),
+                                                       "certificate"  => File.read("spec/support/certificates/selfsigned/selfsigned_registered.cert.pem"),
                                                        "private_key" => File.read("spec/support/certificates/selfsigned/selfsigned_registered.private.nopass.pem"),
                                                        "timeout"     => 3}
     @valid_unregistered_certificate_auth_logstash_configuration = { "host_url"    => "https://localhost:8081",
-                                                                    "public_key"  => File.read("spec/support/certificates/selfsigned/selfsigned_unregistered.cert.pem"),
+                                                                    "certificate"  => File.read("spec/support/certificates/selfsigned/selfsigned_unregistered.cert.pem"),
                                                                     "private_key" => File.read("spec/support/certificates/selfsigned/selfsigned_unregistered.private.nopass.pem"),
                                                                     "timeout"     => 3}
     @valid_basic_auth_logstash_configuration = { "host_url" => "https://localhost:8081",

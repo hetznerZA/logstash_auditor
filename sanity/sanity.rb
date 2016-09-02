@@ -7,7 +7,7 @@ class Main
   def test_sanity
     @iut = LogstashAuditor::LogstashAuditor.new
     @logstash_configuration = { "host_url"    => "https://localhost:8081",
-                                "public_key"  => File.read("../spec/support/certificates/selfsigned/selfsigned_registered.cert.pem"),
+                                "certificate"  => File.read("../spec/support/certificates/selfsigned/selfsigned_registered.cert.pem"),
                                 "private_key" => File.read("../spec/support/certificates/selfsigned/selfsigned_registered.private.nopass.pem"),
                                 "timeout"     => 3}
     @iut.configure(@logstash_configuration)
