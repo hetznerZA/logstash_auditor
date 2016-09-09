@@ -3,5 +3,5 @@ SERVICE_ID [a-zA-Z0-9._-]*
 OPTIONAL_KEY_FIELD [^:]*
 OPTIONAL_VALUE_FIELD [^\]]*
 REMAINING_AUDIT_MESSAGE .*
-KEY_VALUE_PAIR \[%{OPTIONAL_KEY_FIELD:audit_analytics_key}:%{OPTIONAL_VALUE_FIELD:audit_analytics_value}\]
+KEY_VALUE_PAIR \[%{OPTIONAL_KEY_FIELD:audit_optional_field_key}:%{OPTIONAL_VALUE_FIELD:audit_optional_field_value}\]
 MESSAGE_FIELD %{KEY_VALUE_PAIR}?%{REMAINING_AUDIT_MESSAGE:audit_message}
