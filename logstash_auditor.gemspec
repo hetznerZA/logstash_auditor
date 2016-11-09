@@ -28,5 +28,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "http", "~> 2"
   spec.add_dependency "soar_auditor_api", "~> 0.0.12"
+  spec.add_dependency 'net-http-persistent', '~> 3.0.0'
 
 end

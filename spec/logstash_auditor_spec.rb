@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe LogstashAuditor do
-  before :all do
+  before :each do
     @iut = LogstashAuditor::LogstashAuditor.new
     @invalid_logstash_configuration = { "foo" => "bar"}
     @valid_certificate_auth_logstash_configuration = { "host_url"    => "https://localhost:8081",
@@ -16,9 +16,17 @@ describe LogstashAuditor do
                                                  "username" => "auditorusername",
                                                  "password" => "auditorpassword",
                                                  "timeout"  => 3}
+    @valid_certificate_auth_and_tcp_logstash_configuration = { "host_url"    => "tcp://localhost:9090",
+                                                               "certificate"  => File.read("spec/support/certificates/selfsigned/selfsigned_registered.cert.pem"),
+                                                               "private_key" => File.read("spec/support/certificates/selfsigned/selfsigned_registered.private.nopass.pem"),
+                                                               "timeout"     => 3}
     @valid_logstash_configuration = @valid_certificate_auth_logstash_configuration
     @iut.configure(@valid_logstash_configuration)
     @elasticsearch = LogstashAuditor::ElasticSearchTestAPI.new('http://localhost:9200')
+  end
+
+  after :each do
+    @iut.instance_variable_set(:@http,nil)
   end
 
   it 'has a version number' do
@@ -74,6 +82,77 @@ describe LogstashAuditor do
       expect(found_event_message.include?(debug_message)).to eq(true) #Check if the correct audit message was stored
     end
 
+    it "should submit multiple audits to logstash with when multiple audits are recevied" do
+      my_optional_field = SoarAuditingFormatter::Formatter.optional_field_format("somekey", "somevalue")
+      debug_message = "#{my_optional_field} some audit event message"
+
+      flow_id1 = @elasticsearch.create_flow_id
+      @iut.audit(SoarAuditingFormatter::Formatter.format(:debug,'my-rspec-service-id',flow_id1,Time.now,debug_message))
+      flow_id2 = @elasticsearch.create_flow_id
+      @iut.audit(SoarAuditingFormatter::Formatter.format(:debug,'my-rspec-service-id',flow_id2,Time.now,debug_message))
+
+      found_event_message = @elasticsearch.search_for_flow_id(flow_id1)
+      expect(found_event_message).to be_truthy #Check if audit test flow_id has been found
+      expect(found_event_message.include?(debug_message)).to eq(true) #Check if the correct audit message was stored
+
+      found_event_message = @elasticsearch.search_for_flow_id(flow_id2)
+      expect(found_event_message).to be_truthy #Check if audit test flow_id has been found
+      expect(found_event_message.include?(debug_message)).to eq(true) #Check if the correct audit message was stored
+    end
+
+    it "should not take long to submit multiple events to logstash using http" do
+      debug_message = "some audit event message"
+
+      last_flow_id = nil
+      iterations = 100
+      test_start_time = Time.now
+      expect(Timeout::timeout(20) do
+        iterations.times { |x|
+          iteration_start_time = Time.now
+          last_flow_id = @elasticsearch.create_flow_id
+          @iut.audit(SoarAuditingFormatter::Formatter.format(:debug,'my-rspec-service-id',last_flow_id,Time.now,debug_message))
+          iteration_time_delta = Time.now - iteration_start_time
+          $stderr.puts "Http Iteration #{x}/#{iterations} : Time delta = #{iteration_time_delta}"
+        }
+        true
+      end).to eq(true)
+      test_time_delta = Time.now - test_start_time
+      $stderr.puts "Http Test Time Delta = #{test_time_delta}"
+
+      found_event_message = @elasticsearch.search_for_flow_id(last_flow_id)
+      expect(found_event_message).to be_truthy #Check if audit test flow_id has been found
+      expect(found_event_message.include?(debug_message)).to eq(true) #Check if the correct audit message was stored
+    end
+
+    it "should not take long to submit multiple events to logstash using tcp" do
+      @iut = LogstashAuditor::LogstashAuditor.new
+      @iut.configure(@valid_certificate_auth_and_tcp_logstash_configuration)
+
+      debug_message = "some audit event message"
+
+      last_flow_id = nil
+      iterations = 100
+      test_start_time = Time.now
+      expect(Timeout::timeout(20) do
+        iterations.times { |x|
+          iteration_start_time = Time.now
+          last_flow_id = @elasticsearch.create_flow_id
+          @iut.audit(SoarAuditingFormatter::Formatter.format(:debug,'my-rspec-service-id',last_flow_id,Time.now,debug_message))
+          iteration_time_delta = Time.now - iteration_start_time
+          $stderr.puts "Tcp Iteration #{x}/#{iterations} : Time delta = #{iteration_time_delta}"
+          # require 'byebug'
+          # byebug
+        }
+        true
+      end).to eq(true)
+      test_time_delta = Time.now - test_start_time
+      $stderr.puts "Tcp Test Time Delta = #{test_time_delta}"
+
+      found_event_message = @elasticsearch.search_for_flow_id(last_flow_id)
+      expect(found_event_message).to be_truthy #Check if audit test flow_id has been found
+      expect(found_event_message.include?(debug_message)).to eq(true) #Check if the correct audit message was stored
+    end
+
     it "should raise StandardError if logstash connection fails, given incorrect port" do
       expect {
         @iut.configure(@valid_logstash_configuration.dup.merge("host_url" => "http://localhost:9090"))
@@ -113,7 +192,7 @@ describe LogstashAuditor do
       expect {
         @iut.configure(@valid_logstash_configuration.dup.merge("host_url" => "unknownprotocolandhosturl"))
         @iut.audit("message")
-      }.to raise_error(StandardError, 'Failed to create connection')
+      }.to raise_error(StandardError)
     end
 
     it "should raise StandardError if logstash connection is refused" do
