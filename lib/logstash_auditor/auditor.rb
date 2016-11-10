@@ -47,7 +47,7 @@ module LogstashAuditor
 
     def url_scheme
       scheme = URI.parse(@configuration['host_url']).scheme
-      raise StandardError, "Unable to parse uri #{@configuration['host_url']} for a valid scheme" if scheme.nil?
+      raise StandardError, "Unable to parse url scheme from #{@configuration['host_url']}" if scheme.nil?
       scheme
     end
   end

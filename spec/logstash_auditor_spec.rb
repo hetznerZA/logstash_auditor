@@ -104,7 +104,7 @@ describe LogstashAuditor do
       debug_message = "some audit event message"
 
       last_flow_id = nil
-      iterations = 100
+      iterations = 10
       test_start_time = Time.now
       expect(Timeout::timeout(20) do
         iterations.times { |x|
@@ -131,7 +131,7 @@ describe LogstashAuditor do
       debug_message = "some audit event message"
 
       last_flow_id = nil
-      iterations = 100
+      iterations = 10
       test_start_time = Time.now
       expect(Timeout::timeout(20) do
         iterations.times { |x|
@@ -140,8 +140,6 @@ describe LogstashAuditor do
           @iut.audit(SoarAuditingFormatter::Formatter.format(:debug,'my-rspec-service-id',last_flow_id,Time.now,debug_message))
           iteration_time_delta = Time.now - iteration_start_time
           $stderr.puts "Tcp Iteration #{x}/#{iterations} : Time delta = #{iteration_time_delta}"
-          # require 'byebug'
-          # byebug
         }
         true
       end).to eq(true)
