@@ -1,5 +1,6 @@
 require 'socket'
 require 'json'
+require 'openssl'
 
 module LogstashAuditor
   class TcpTransport
@@ -8,10 +9,20 @@ module LogstashAuditor
     end
 
     def audit(audit_data)
-      sock = TCPSocket.new(remote_host, remote_port)
-      sock.sync = true
-      sock.write JSON.dump(audit_data)
-      sock.close
+      socket = TCPSocket.new(remote_host, remote_port)
+      socket.sync = true
+
+      ssl_context = OpenSSL::SSL::SSLContext.new()
+      ssl_context.cert = OpenSSL::X509::Certificate.new(@configuration['certificate'])
+      ssl_context.key = OpenSSL::PKey::RSA.new(@configuration['private_key'])
+      ssl_context.ssl_version = :SSLv23
+
+      ssl_socket = OpenSSL::SSL::SSLSocket.new(socket, ssl_context)
+      ssl_socket.sync_close = true
+      ssl_socket.connect
+
+      ssl_socket.puts JSON.dump(audit_data)
+      ssl_socket.close
     end
 
     private
