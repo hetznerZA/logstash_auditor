@@ -37,4 +37,7 @@ openssl x509 -noout -text -in $NAME.cert.pem
 echo Converting to pkcs12
 openssl pkcs12 -export -passin pass:$PASSWORD -passout pass:$PASSWORD -inkey $NAME.private.pem -certfile ../intermediate_ca/certs/ca-chain.cert.pem -in $NAME.cert.pem -out $NAME.cert.pkcs12
 
+#Create copy of private key that is decrypted
+openssl rsa -passin pass:$PASSWORD -in $NAME.private.pem -out $NAME.private.nopass.pem
+
 cd ..
