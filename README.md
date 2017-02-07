@@ -45,7 +45,7 @@ First you need to generate the certificates needed for authenticating the client
 Start a docker container with the ELK stack:
 
 ```bash
-  docker run -d --name elk_test_service -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -v $(pwd)/spec/support/certificates:/etc/logstash/certs -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8081:8080 sebp/elk
+  docker run -d --name elk_test_service -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -v $(pwd)/spec/support/certificates:/etc/logstash/certs -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8081:8080 sebp/elk:es234_l234_k453
 ```
 
 Wait about 30 seconds for image to fire up. Then perform the tests:
