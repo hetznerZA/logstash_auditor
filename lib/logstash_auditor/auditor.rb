@@ -11,6 +11,11 @@ module LogstashAuditor
     end
 
     #inversion of control method required by the AuditorAPI
+    def prefer_direct_call?
+      false
+    end
+
+    #inversion of control method required by the AuditorAPI
     def audit(audit_data)
       request = create_request(audit_data)
       http = create_http_transport
