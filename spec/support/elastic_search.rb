@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module LogstashAuditor
 
   SEARCH_POLLING_MAXIMUM_WAIT  = 5   unless defined? SEARCH_POLLING_MAXIMUM_WAIT;  SEARCH_POLLING_MAXIMUM_WAIT.freeze
