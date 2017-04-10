@@ -6,5 +6,5 @@ openssl req -x509 -config openssl.cnf -passout pass:$PASSWORD -newkey rsa:4096 -
 openssl rsa -passin pass:$PASSWORD -in selfsigned_registered.private.pem   -out selfsigned_registered.private.nopass.pem
 openssl rsa -passin pass:$PASSWORD -in selfsigned_unregistered.private.pem -out selfsigned_unregistered.private.nopass.pem
 
-#curl -iv -E ./selfsigned_registered.cert.pem --key ./selfsigned_registered.private.nopass.pem https://localhost:8081 -d "message=soar_sc_logstash_test" --insecure
-#curl -iv -E ./selfsigned_unregistered.cert.pem --key ./selfsigned_unregistered.private.nopass.pem https://localhost:8081 -d "message=soar_sc_logstash_test" --insecur
+#curl -iv -E ./selfsigned_registered.cert.pem --key ./selfsigned_registered.private.nopass.pem https://localhost:8080 -d "message=soar_sc_logstash_test" --insecure
+#curl -iv -E ./selfsigned_unregistered.cert.pem --key ./selfsigned_unregistered.private.nopass.pem https://localhost:8080 -d "message=soar_sc_logstash_test" --insecur

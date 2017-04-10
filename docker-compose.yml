@@ -1,0 +1,28 @@
+version: '2.0'
+services:
+  elk_test_service:
+    image: sebp/elk:es234_l234_k453
+    expose:
+      - "9300"
+      - "9200"
+      - "5000"
+      - "5044"
+      - "5601"
+      - "8080"
+    ports:
+      - "9300:9300"
+      - "9200:9200"
+      - "5000:5000"
+      - "5044:5044"
+      - "5601:5601"
+      - "8080:8080"
+    volumes:
+      - ./spec/support/logstash_conf.d:/etc/logstash/conf.d
+      - ./spec/support/certificates:/etc/logstash/certs
+  test:
+    build: .
+    command: /bin/bash -c 'sleep 30; bundle exec rspec -cfd spec/*'
+    volumes:
+      - .:/usr/local/src/
+    links:
+      - elk_test_service

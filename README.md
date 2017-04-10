@@ -45,7 +45,7 @@ First you need to generate the certificates needed for authenticating the client
 Start a docker container with the ELK stack:
 
 ```bash
-  docker run -d --name elk_test_service -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -v $(pwd)/spec/support/certificates:/etc/logstash/certs -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8081:8080 sebp/elk:es234_l234_k453
+  docker run -d --name elk_test_service -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -v $(pwd)/spec/support/certificates:/etc/logstash/certs -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8080:8080 sebp/elk:es234_l234_k453
 ```
 
 Wait about 30 seconds for image to fire up. Then perform the tests:
@@ -66,7 +66,7 @@ Debugging the docker image:
 
 Manual sending of an audit event to docker ELK stack:
 ```bash
-  curl -iv -E ./spec/support/certificates/selfsigned/selfsigned_registered.cert.pem --key ./spec/support/certificates/selfsigned/selfsigned_registered.private.nopass.pem https://localhost:8081 -d "message=soar_logstash_test" --insecure
+  curl -iv -E ./spec/support/certificates/selfsigned/selfsigned_registered.cert.pem --key ./spec/support/certificates/selfsigned/selfsigned_registered.private.nopass.pem https://localhost:8080 -d "{\"audit_message\":\"bla\",\"audit_something_else\":\"foo\"}" --insecure
 ```
 
 View the audit events created on the Kibana interface:
@@ -82,7 +82,7 @@ Initialize and configure the auditor so:
 ```ruby
 @iut = LogstashAuditor::LogstashAuditor.new
 @logstash_configuration =
-{ "host_url" => "http://localhost:8081",
+{ "host_url" => "http://localhost:8080",
   "username" => "auditorusername",
   "password" => "auditorpassword",
   "timeout"  => 3}

@@ -4,21 +4,21 @@ describe LogstashAuditor do
   before :all do
     @iut = LogstashAuditor::LogstashAuditor.new
     @invalid_logstash_configuration = { "foo" => "bar"}
-    @valid_certificate_auth_logstash_configuration = { "host_url"    => "https://localhost:8081",
+    @valid_certificate_auth_logstash_configuration = { "host_url"    => "https://elk_test_service:8080",
                                                        "certificate"  => File.read("spec/support/certificates/selfsigned/selfsigned_registered.cert.pem"),
                                                        "private_key" => File.read("spec/support/certificates/selfsigned/selfsigned_registered.private.nopass.pem"),
                                                        "timeout"     => 3}
-    @valid_unregistered_certificate_auth_logstash_configuration = { "host_url"    => "https://localhost:8081",
+    @valid_unregistered_certificate_auth_logstash_configuration = { "host_url"    => "https://elk_test_service:8080",
                                                                     "certificate"  => File.read("spec/support/certificates/selfsigned/selfsigned_unregistered.cert.pem"),
                                                                     "private_key" => File.read("spec/support/certificates/selfsigned/selfsigned_unregistered.private.nopass.pem"),
                                                                     "timeout"     => 3}
-    @valid_basic_auth_logstash_configuration = { "host_url" => "https://localhost:8081",
+    @valid_basic_auth_logstash_configuration = { "host_url" => "https://elk_test_service:8080",
                                                  "username" => "auditorusername",
                                                  "password" => "auditorpassword",
                                                  "timeout"  => 3}
     @valid_logstash_configuration = @valid_certificate_auth_logstash_configuration
     @iut.configure(@valid_logstash_configuration)
-    @elasticsearch = LogstashAuditor::ElasticSearchTestAPI.new('http://localhost:9200')
+    @elasticsearch = LogstashAuditor::ElasticSearchTestAPI.new('http://elk_test_service:9200')
   end
 
   it 'has a version number' do
@@ -80,14 +80,14 @@ describe LogstashAuditor do
 
     it "should raise StandardError if logstash connection fails, given incorrect port" do
       expect {
-        @iut.configure(@valid_logstash_configuration.dup.merge("host_url" => "http://localhost:9090"))
+        @iut.configure(@valid_logstash_configuration.dup.merge("host_url" => "http://elk_test_service:9090"))
         @iut.audit("message")
       }.to raise_error(StandardError, 'Failed to create connection')
     end
 
     it "should raise StandardError if logstash connection fails, given incorrect host" do
       expect {
-        @iut.configure(@valid_logstash_configuration.dup.merge("host_url" => "http://somewhere:8081"))
+        @iut.configure(@valid_logstash_configuration.dup.merge("host_url" => "http://somewhere:8080"))
         @iut.audit("message")
       }.to raise_error(StandardError, 'Failed to create connection')
     end
@@ -122,7 +122,7 @@ describe LogstashAuditor do
 
     it "should raise StandardError if logstash connection is refused" do
       expect {
-        @iut.configure(@valid_logstash_configuration.dup.merge("host_url" => "http://localhost:9090"))
+        @iut.configure(@valid_logstash_configuration.dup.merge("host_url" => "http://elk_test_service:9090"))
         @iut.audit("message")
       }.to raise_error(StandardError, 'Failed to create connection')
     end
