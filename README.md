@@ -43,7 +43,7 @@ retry 3 docker-compose down
 retry 3 docker-compose build --force-rm --no-cache
 
 set -e
-retry 3 docker-compose run --rm test
+retry 3 docker-compose -f docker-compose-isolated.yml run --rm test
 EXIT_CODE=$?
 set +e
 
