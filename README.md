@@ -35,12 +35,20 @@ This configuration is used by the docker image during the TDD tests which ensure
 ## Testing for CI purposes
 
 ```bash
+#!/bin/bash
 ./spec/support/certificates/setup_certificates_for_logstash_testing.sh
+source retry.sh
 export UID
-docker-compose build --force-rm --no-cache
+retry 3 docker-compose down
+retry 3 docker-compose build --force-rm --no-cache
+
+set -e
+retry 3 docker-compose run --rm test
+EXIT_CODE=$?
+set +e
+
 docker-compose down
-docker-compose run --rm test
-docker-compose down
+exit $EXIT_CODE
 ```
 
 ## Testing
