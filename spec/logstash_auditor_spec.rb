@@ -69,13 +69,31 @@ describe LogstashAuditor do
       flow_id = @elasticsearch.create_flow_id
 
       my_optional_field = SoarAuditingFormatter::Formatter.optional_field_format("somekey", "somevalue")
-      debug_message = "#{my_optional_field} some audit event message"
+      debug_message = "some audit event message"
+      debug_message_with_optional_field = "#{my_optional_field}#{debug_message}"
 
-      @iut.audit(SoarAuditingFormatter::Formatter.format(:debug,'my-rspec-service-id',flow_id,Time.now,debug_message))
+      @iut.audit(SoarAuditingFormatter::Formatter.format(:debug,'my-rspec-service-id',flow_id,Time.now,debug_message_with_optional_field))
       found_event_message = @elasticsearch.search_for_flow_id(flow_id)
 
       expect(found_event_message).to be_truthy #Check if audit test flow_id has been found
       expect(found_event_message.include?(debug_message)).to eq(true) #Check if the correct audit message was stored
+    end
+
+    it "should submit audit hash to logstash as JSON string" do
+      #Create an unique test flow_id that will be used to correlate the submitted test audit
+      #with the audit found by elastic search.
+      flow_id_in_param = @elasticsearch.create_flow_id
+      flow_id_in_hash = @elasticsearch.create_flow_id
+      debug_message = {
+        'auth_id' => 'some_id',
+        'message' => 'message_from_hash',
+        'flow_id' => flow_id_in_hash
+      }
+      @iut.audit(SoarJsonAuditingFormatter::Formatter.format(:debug,'my-rspec-service-id',flow_id_in_param,Time.now,debug_message))
+      found_event_message = @elasticsearch.search_for_flow_id(flow_id_in_hash)
+
+      expect(found_event_message).to be_truthy #Check if audit test flow_id has been found
+      expect(found_event_message.include?(debug_message['message'])).to eq(true) #Check if the correct audit message was stored
     end
 
     it "should raise StandardError if logstash connection fails, given incorrect port" do

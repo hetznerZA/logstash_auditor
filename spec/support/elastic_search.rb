@@ -33,23 +33,23 @@ module LogstashAuditor
     private
 
     def search(flow_id)
-      @client.index  index: 'audit_flow_id', type: 'my-document', id: 1, body: { title: 'audit_flow_id' }
-      @client.indices.refresh index: 'audit_flow_id'
+      @client.index  index: 'audit.flow_id', type: 'my-document', id: 1, body: { title: 'audit.flow_id' }
+      @client.indices.refresh index: 'audit.flow_id'
       result = @client.search index: '',
-                              fields: ['message', 'audit_flow_id'],
+                              fields: ['audit.message', 'audit.flow_id'],
                               sort:
                               {
-                                'timestamp': { order: 'desc'}
+                                'audit.timestamp': { order: 'desc'}
                               },
                               body:
                               {
                                 query:
                                 {
-                                  match: { 'audit_flow_id': flow_id}
+                                  match: { 'audit.flow_id': flow_id}
                                 }
                               }
       if result["hits"]["total"] > 0
-        return result["hits"]["hits"][0]["fields"]["message"][0]
+        return result["hits"]["hits"][0]["fields"]["audit.message"][0]
       else
         return nil
       end

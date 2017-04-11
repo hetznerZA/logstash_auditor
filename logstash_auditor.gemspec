@@ -25,6 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "byebug", "~> 9"
   spec.add_development_dependency "elasticsearch", "~> 1"
   spec.add_development_dependency "soar_auditing_format", "~> 0.0.5"
+  spec.add_development_dependency "soar_json_auditing_format", "~> 0.0.2"
 
   spec.add_dependency "http", "~> 2"
   spec.add_dependency "soar_auditor_api", "~> 1.0"
