@@ -41,7 +41,7 @@ Run the rspec test tests using docker compose:
 export UID
 docker-compose build --force-rm --no-cache
 docker-compose down
-docker-compose run --rm soar-json-auditing-format
+docker-compose run --rm test
 docker-compose down
 ```
 
