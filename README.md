@@ -32,9 +32,7 @@ Or install it yourself as:
 The logstash server must be configured using the configuration in the folder spec/support/logstash_conf.d and spec/support/certificates.
 This configuration is used by the docker image during the TDD tests which ensures that this gem and the server configuration is compatible.
 
-## Docker Testing
-
-Run the rspec test tests using docker compose:
+## Testing for CI purposes
 
 ```bash
 ./spec/support/certificates/setup_certificates_for_logstash_testing.sh
