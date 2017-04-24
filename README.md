@@ -61,27 +61,19 @@ First you need to generate the certificates needed for authenticating the client
   ./spec/support/certificates/setup_certificates_for_logstash_testing.sh
 ```
 
-Start a docker container with the ELK stack:
+Then perform the tests:
 
 ```bash
-  docker run -d --name elk_test_service -v $(pwd)/spec/support/logstash_conf.d:/etc/logstash/conf.d -v $(pwd)/spec/support/certificates:/etc/logstash/certs -p 9300:9300 -p 9200:9200 -p 5000:5000 -p 5044:5044 -p 5601:5601 -p 8080:8080 sebp/elk:es234_l234_k453
-```
-
-Wait about 30 seconds for image to fire up. Then perform the tests:
-
-```bash
-  bundle exec rspec -cfd spec/*
+./spec/support/certificates/setup_certificates_for_logstash_testing.sh
+export UID
+docker-compose down
+docker-compose build --force-rm --no-cache
+docker-compose -f docker-compose-isolated.yml run --rm test
+docker-compose down
 ```
 
 Note that in order to ensure that the processing has occurred on Elastic Search
 there is a 2 second delay between each event submission request and the search request
-
-Debugging the docker image:
-```bash
-  docker exec -it elk_test_service bash
-  docker stop elk_test_service
-  docker rm -f elk_test_service
-```
 
 Manual sending of an audit event to docker ELK stack:
 ```bash
